@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>質感數獨</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>SUDOKU</h1>
+            <div class="controls">
+                <select id="difficulty-select" class="glass-select">
+                    <option value="very_easy">極簡 (Very Easy)</option>
+                    <option value="easy">簡單 (Easy)</option>
+                    <option value="medium" selected>中等 (Medium)</option>
+                    <option value="hard">困難 (Hard)</option>
+                    <option value="expert">專家 (Expert)</option>
+                </select>
+                <button id="new-game-btn" class="glass-btn">新遊戲</button>
+                <button id="hint-btn" class="glass-btn hint-btn">提示</button>
+            </div>
+            <div class="status">
+                <span id="timer">00:00</span>
+                <span id="mistakes">錯誤: 0/3</span>
+            </div>
+        </header>
+
+        <main>
+            <div id="sudoku-board" class="board"></div>
+            
+            <div class="numpad">
+                <button class="num-btn" data-val="1">1</button>
+                <button class="num-btn" data-val="2">2</button>
+                <button class="num-btn" data-val="3">3</button>
+                <button class="num-btn" data-val="4">4</button>
+                <button class="num-btn" data-val="5">5</button>
+                <button class="num-btn" data-val="6">6</button>
+                <button class="num-btn" data-val="7">7</button>
+                <button class="num-btn" data-val="8">8</button>
+                <button class="num-btn" data-val="9">9</button>
+                <button class="num-btn action-btn" id="erase-btn">清除</button>
+            </div>
+        </main>
+
+        <div id="game-over-modal" class="modal hidden">
+            <div class="modal-content glass-panel">
+                <h2 id="modal-title">遊戲結束</h2>
+                <p id="modal-message">恭喜過關！</p>
+                <p id="modal-time">時間: <span>00:00</span></p>
+                <button id="modal-new-game-btn" class="glass-btn primary">再來一局</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -7,6 +7,9 @@ let timerInterval = null;
 let secondsElapsed = 0;
 let mistakes = 0;
 const MAX_MISTAKES = 3;
+let isPaused = false;
+let hintsRemaining = 3;
+const MAX_HINTS = 3;
 
 // DOM Elements
 const boardEl = document.getElementById('sudoku-board');
@@ -22,6 +25,8 @@ const modalTitle = document.getElementById('modal-title');
 const modalMessage = document.getElementById('modal-message');
 const modalTime = document.getElementById('modal-time');
 const modalNewGameBtn = document.getElementById('modal-new-game-btn');
+const pauseBtn = document.getElementById('pause-btn');
+const hintsLeftEl = document.getElementById('hints-left');
 
 // --- Sudoku Generation ---
 function generateSudoku(difficulty) {
@@ -107,7 +112,9 @@ function renderBoard() {
                 }
             }
             
-            cell.addEventListener('click', () => selectCell(r, c));
+            cell.addEventListener('click', () => {
+                if (!isPaused) selectCell(r, c);
+            });
             boardEl.appendChild(cell);
         }
     }
@@ -115,6 +122,7 @@ function renderBoard() {
 }
 
 function selectCell(r, c) {
+    if (isPaused) return;
     selectedCell = {r, c};
     updateHighlights();
 }
@@ -162,7 +170,7 @@ function updateCellDOM(r, c) {
 
 // --- Gameplay Interactions ---
 function inputNumber(num) {
-    if (!selectedCell) return;
+    if (isPaused || !selectedCell) return;
     const {r, c} = selectedCell;
     
     // Cannot overwrite fixed cells or already correctly filled cells
@@ -201,7 +209,7 @@ function inputNumber(num) {
 }
 
 function eraseNumber() {
-    if (!selectedCell) return;
+    if (isPaused || !selectedCell) return;
     const {r, c} = selectedCell;
     // Cannot overwrite fixed cells or already correctly filled cells
     if (initialBoard[r][c] !== 0 || board[r][c] === solution[r][c]) return;
@@ -212,11 +220,58 @@ function eraseNumber() {
 }
 
 function useHint() {
-    if (!selectedCell) return;
-    const {r, c} = selectedCell;
-    if (board[r][c] === 0 || board[r][c] !== solution[r][c]) {
-        inputNumber(solution[r][c]);
+    if (isPaused || hintsRemaining <= 0) return;
+
+    let r, c;
+    
+    // Logic: If a cell is selected and it's empty or wrong, use it.
+    // Otherwise, find a random empty cell.
+    if (selectedCell) {
+        r = selectedCell.r;
+        c = selectedCell.c;
+        if (initialBoard[r][c] !== 0 || board[r][c] === solution[r][c]) {
+            // Find another cell if selected is fixed or already correct
+            const emptyCells = [];
+            for (let i = 0; i < 9; i++) {
+                for (let j = 0; j < 9; j++) {
+                    if (board[i][j] !== solution[i][j]) emptyCells.push({r: i, c: j});
+                }
+            }
+            if (emptyCells.length === 0) return;
+            const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            r = randomCell.r;
+            c = randomCell.c;
+        }
+    } else {
+        const emptyCells = [];
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
+                if (board[i][j] !== solution[i][j]) emptyCells.push({r: i, c: j});
+            }
+        }
+        if (emptyCells.length === 0) return;
+        const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        r = randomCell.r;
+        c = randomCell.c;
     }
+
+    // Apply hint
+    board[r][c] = solution[r][c];
+    hintsRemaining--;
+    hintsLeftEl.textContent = hintsRemaining;
+    
+    // Select and update UI
+    selectCell(r, c);
+    updateCellDOM(r, c);
+    
+    const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+    cell.classList.add('hinted');
+    
+    if (hintsRemaining === 0) {
+        hintBtn.classList.add('disabled');
+    }
+    
+    checkWin();
 }
 
 function checkWin() {
@@ -234,9 +289,22 @@ function startTimer() {
     secondsElapsed = 0;
     updateTimerDOM();
     timerInterval = setInterval(() => {
-        secondsElapsed++;
-        updateTimerDOM();
+        if (!isPaused) {
+            secondsElapsed++;
+            updateTimerDOM();
+        }
     }, 1000);
+}
+
+function togglePause() {
+    isPaused = !isPaused;
+    if (isPaused) {
+        pauseBtn.textContent = '繼續';
+        boardEl.classList.add('paused');
+    } else {
+        pauseBtn.textContent = '暫停';
+        boardEl.classList.remove('paused');
+    }
 }
 
 function updateTimerDOM() {
@@ -248,6 +316,14 @@ function updateTimerDOM() {
 function startNewGame() {
     mistakes = 0;
     mistakesEl.textContent = `錯誤: 0/${MAX_MISTAKES}`;
+    hintsRemaining = MAX_HINTS;
+    hintsLeftEl.textContent = hintsRemaining;
+    hintBtn.classList.remove('disabled');
+    
+    isPaused = false;
+    pauseBtn.textContent = '暫停';
+    boardEl.classList.remove('paused');
+    
     selectedCell = null;
     modal.classList.add('hidden');
     
@@ -278,6 +354,7 @@ function gameOver(win) {
 // --- Event Listeners ---
 newGameBtn.addEventListener('click', startNewGame);
 modalNewGameBtn.addEventListener('click', startNewGame);
+pauseBtn.addEventListener('click', togglePause);
 hintBtn.addEventListener('click', useHint);
 difficultySelect.addEventListener('change', startNewGame);
 
@@ -293,7 +370,7 @@ eraseBtn.addEventListener('click', eraseNumber);
 
 // Keyboard support
 window.addEventListener('keydown', (e) => {
-    if (modal.classList.contains('hidden') === false) return;
+    if (modal.classList.contains('hidden') === false || isPaused) return;
     
     if (e.key >= '1' && e.key <= '9') {
         inputNumber(parseInt(e.key));

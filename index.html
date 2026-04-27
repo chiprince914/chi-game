@@ -20,7 +20,8 @@
                     <option value="expert">專家 (Expert)</option>
                 </select>
                 <button id="new-game-btn" class="glass-btn">新遊戲</button>
-                <button id="hint-btn" class="glass-btn hint-btn">提示</button>
+                <button id="pause-btn" class="glass-btn">暫停</button>
+                <button id="hint-btn" class="glass-btn hint-btn">提示 (<span id="hints-left">3</span>)</button>
             </div>
             <div class="status">
                 <span id="timer">00:00</span>
@@ -29,7 +30,9 @@
         </header>
 
         <main>
-            <div id="sudoku-board" class="board"></div>
+            <div id="sudoku-board" class="board">
+                <div class="pause-overlay">已暫停</div>
+            </div>
             
             <div class="numpad">
                 <button class="num-btn" data-val="1">1</button>

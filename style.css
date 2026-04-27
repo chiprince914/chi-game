@@ -148,6 +148,11 @@ h1 {
 .hint-btn:hover {
     background: rgba(16, 185, 129, 0.2);
 }
+.hint-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+}
 
 /* Board */
 .board {
@@ -161,6 +166,33 @@ h1 {
     overflow: hidden;
     aspect-ratio: 1;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.board.paused .cell {
+    color: transparent !important;
+    background-color: var(--cell-bg) !important;
+    filter: blur(8px);
+}
+
+.pause-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: 10;
+    border-radius: 8px;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    letter-spacing: 4px;
+    backdrop-filter: blur(4px);
+}
+
+.board.paused .pause-overlay {
+    display: flex;
 }
 
 .cell {
@@ -210,6 +242,10 @@ h1 {
 }
 .cell.pulse {
     animation: pulse 0.3s ease-out;
+}
+.cell.hinted {
+    color: #34d399 !important;
+    text-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
 }
 
 /* Numpad */

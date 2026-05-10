@@ -1,19 +1,19 @@
 :root {
-    --bg-color: #0f172a;
-    --text-color: #f8fafc;
+    --bg-color: #ffffff;
+    --text-color: #1e293b;
     --primary-color: #3b82f6;
     --primary-hover: #2563eb;
-    --cell-bg: rgba(255, 255, 255, 0.05);
-    --cell-bg-hover: rgba(255, 255, 255, 0.1);
-    --cell-selected: rgba(59, 130, 246, 0.4);
-    --cell-related: rgba(59, 130, 246, 0.15);
-    --cell-error: rgba(239, 68, 68, 0.4);
+    --cell-bg: #ffffff;
+    --cell-bg-hover: #f8fafc;
+    --cell-selected: rgba(59, 130, 246, 0.15);
+    --cell-related: transparent; /* Remove crosshair hint */
+    --cell-error: rgba(239, 68, 68, 0.1);
     --cell-error-text: #ef4444;
-    --cell-fixed-text: #94a3b8;
-    --border-color: rgba(255, 255, 255, 0.1);
-    --border-thick: rgba(255, 255, 255, 0.3);
-    --glass-bg: rgba(15, 23, 42, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --cell-fixed-text: #64748b;
+    --border-color: #e2e8f0;
+    --border-thick: #cbd5e1;
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: #e2e8f0;
 }
 
 * {
@@ -26,10 +26,10 @@
 }
 
 body {
-    background-color: #020617;
+    background-color: #f1f5f9;
     background-image: 
-        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.05) 0px, transparent 50%);
     color: var(--text-color);
     min-height: 100vh;
     display: flex;
@@ -49,7 +49,7 @@ body {
     flex-direction: column;
     gap: 16px;
     border-radius: 40px;
-    box-shadow: 0 0 0 8px #0f172a, 0 0 0 10px #334155, 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 0 8px #ffffff, 0 0 0 10px #f1f5f9, 0 25px 50px -12px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow-y: auto;
     -ms-overflow-style: none;
@@ -100,22 +100,22 @@ h1 {
     display: flex;
     justify-content: space-between;
     font-size: 1.1rem;
-    color: #cbd5e1;
+    color: #64748b;
     padding: 0 10px;
     font-weight: 300;
 }
 
 .glass-btn, .glass-select {
-    background: var(--cell-bg);
+    background: #ffffff;
     border: 1px solid var(--border-color);
     color: var(--text-color);
     padding: 8px 16px;
     border-radius: 8px;
     font-size: 1rem;
     cursor: pointer;
-    backdrop-filter: blur(10px);
     transition: all 0.2s ease;
     outline: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .glass-select option {
@@ -147,11 +147,6 @@ h1 {
 }
 .hint-btn:hover {
     background: rgba(16, 185, 129, 0.2);
-}
-.hint-btn.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    filter: grayscale(0.5);
 }
 
 /* Board */
@@ -238,7 +233,7 @@ h1 {
     animation: shake 0.3s ease-in-out;
 }
 .cell.highlight-num {
-    background-color: rgba(167, 139, 250, 0.3);
+    background-color: transparent; /* Remove same number highlight as well if requested as "hints" */
 }
 .cell.pulse {
     animation: pulse 0.3s ease-out;
@@ -257,7 +252,7 @@ h1 {
 }
 
 .num-btn {
-    background: var(--cell-bg);
+    background: #f8fafc;
     border: 1px solid var(--border-color);
     color: var(--text-color);
     font-size: 1.5rem;
@@ -265,14 +260,16 @@ h1 {
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.15s ease;
-    backdrop-filter: blur(5px);
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .num-btn:hover {
-    background: var(--cell-bg-hover);
+    background: #f1f5f9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
 .num-btn:active {

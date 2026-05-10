@@ -93,7 +93,8 @@ h1 {
 .controls {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .status {
@@ -195,11 +196,18 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.5rem;
-    font-weight: 400;
+    font-size: 1.6rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    line-height: 1;
+    overflow: hidden;
+    transition: background-color 0.15s ease, color 0.15s ease, font-size 0.2s ease;
 }
+
+/* Font size overrides */
+.board.font-small .cell { font-size: 1.3rem; }
+.board.font-medium .cell { font-size: 1.6rem; }
+.board.font-large .cell { font-size: 1.9rem; font-weight: 700; }
 
 /* Grid borders for 3x3 */
 .cell:nth-child(3n) {
@@ -233,7 +241,7 @@ h1 {
     animation: shake 0.3s ease-in-out;
 }
 .cell.highlight-num {
-    background-color: transparent; /* Remove same number highlight as well if requested as "hints" */
+    background-color: rgba(59, 130, 246, 0.15); /* Slightly stronger blue for same-number hint */
 }
 .cell.pulse {
     animation: pulse 0.3s ease-out;
@@ -255,7 +263,7 @@ h1 {
     background: #f8fafc;
     border: 1px solid var(--border-color);
     color: var(--text-color);
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     padding: 15px 0;
     border-radius: 12px;
     cursor: pointer;
@@ -359,9 +367,6 @@ h1 {
 }
 
 @media (max-width: 400px) {
-    .cell {
-        font-size: 1.2rem;
-    }
     .num-btn {
         padding: 10px 0;
         font-size: 1.2rem;

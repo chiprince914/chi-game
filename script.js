@@ -7,6 +7,8 @@ let timerInterval = null;
 let secondsElapsed = 0;
 let mistakes = 0;
 const MAX_MISTAKES = 3;
+let hintsLeft = 3;
+const MAX_HINTS = 3;
 
 // DOM Elements
 const boardEl = document.getElementById('sudoku-board');
@@ -22,6 +24,8 @@ const modalTitle = document.getElementById('modal-title');
 const modalMessage = document.getElementById('modal-message');
 const modalTime = document.getElementById('modal-time');
 const modalNewGameBtn = document.getElementById('modal-new-game-btn');
+const hintsLeftEl = document.getElementById('hints-left');
+const fontSizeSelect = document.getElementById('font-size-select');
 
 // --- Sudoku Generation ---
 function generateSudoku(difficulty) {
@@ -111,7 +115,13 @@ function renderBoard() {
             boardEl.appendChild(cell);
         }
     }
+    updateFontSize();
     updateHighlights();
+}
+
+function updateFontSize() {
+    boardEl.classList.remove('font-small', 'font-medium', 'font-large');
+    boardEl.classList.add(`font-${fontSizeSelect.value}`);
 }
 
 function selectCell(r, c) {
@@ -133,7 +143,14 @@ function updateHighlights() {
             if (cr === r && cc === c) {
                 cell.classList.add('selected');
             }
-            // Removed crosshair and same-number highlights per request
+            
+            // Highlight same numbers (Show this as a "hint")
+            const val = cell.textContent;
+            const selectedVal = board[r][c];
+            if (selectedVal !== 0 && val == selectedVal && !(cr === r && cc === c)) {
+                cell.classList.add('highlight-num');
+            }
+            // Removed crosshair highlight (row/col/box) per request
         }
     });
 }
@@ -201,10 +218,20 @@ function eraseNumber() {
 }
 
 function useHint() {
-    if (!selectedCell) return;
+    if (!selectedCell || hintsLeft <= 0) return;
     const {r, c} = selectedCell;
-    if (board[r][c] === 0 || board[r][c] !== solution[r][c]) {
-        inputNumber(solution[r][c]);
+    
+    // If cell is already correct, don't waste a hint
+    if (board[r][c] === solution[r][c]) return;
+    
+    inputNumber(solution[r][c]);
+    hintsLeft--;
+    hintsLeftEl.textContent = hintsLeft;
+    
+    if (hintsLeft === 0) {
+        hintBtn.classList.add('disabled');
+        hintBtn.style.opacity = '0.5';
+        hintBtn.style.pointerEvents = 'none';
     }
 }
 
@@ -243,6 +270,13 @@ function startNewGame() {
     generateSudoku(difficultySelect.value);
     renderBoard();
     startTimer();
+    
+    // Reset hints
+    hintsLeft = MAX_HINTS;
+    hintsLeftEl.textContent = hintsLeft;
+    hintBtn.classList.remove('disabled');
+    hintBtn.style.opacity = '1';
+    hintBtn.style.pointerEvents = 'auto';
 }
 
 function gameOver(win) {
@@ -269,6 +303,7 @@ newGameBtn.addEventListener('click', startNewGame);
 modalNewGameBtn.addEventListener('click', startNewGame);
 hintBtn.addEventListener('click', useHint);
 difficultySelect.addEventListener('change', startNewGame);
+fontSizeSelect.addEventListener('change', updateFontSize);
 
 numBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
